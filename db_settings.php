@@ -167,7 +167,7 @@ $(document).ready(function(){
       $("#user_del").prop('disabled', true);
     } else {
       showSpinner($('#userid'));
-      $.getJSON("ajax_request.php?req=User&userid="+$('#userid').val(), function(data) {
+      $.getJSON("ajax_request.php?req=UserLogin&userid="+$('#userid').val(), function(data) {
         hideSpinner($('#userid'));
         if (data.alert === "NOSESSION") {
           alert("<?=_("Your login has timed out - please refresh the page.")?>");
@@ -176,6 +176,9 @@ $(document).ready(function(){
           $('#userform').populate(data, {resetForm:false});
           $("#language").val(data.language);
           $("#user_del").prop('disabled', false);
+          $("#login").html(data.login); //it seems populate doesn't work well with non-inputs, so adding these by hand
+          $("#login_num").html(data.login_num);
+          $("#login_years").html(JSON.stringify(data.login_years, null, 4)); //login_years is an array of year => num_logins
         }
       });
     }
@@ -415,8 +418,13 @@ while ($row = mysqli_fetch_object($result))  echo "    <option value=\"".$row->U
   id="new_pw1" name="new_pw1" style="width:10em">
   <span class="comment"><?=_("(leave blank if not changing password)")?></span></label>
   <label class="label-n-input"><?=_("New Password again")?>: <input type="password"
-  id="new_pw2" name="new_pw2" style="width:10em"></label><br />
+  id="new_pw2" name="new_pw2" style="width:10em"></label>
+  <br />
   <label class="label-n-input"><?=_("PHP for Dashboard")?>: <textarea id="dashboard" name="dashboard" style="height:3em;width:70%"></textarea></label>
+  <br/>
+  Last Login:<span class="comment" id="login"> <?=_("LoginTime")?> </span>
+  Total Logins:<span class="comment" id="login_num"> <?=_("LoginNum")?> </span>
+  Logins by Year:<span class="comment" id="login_years"> <?=_("LoginYears")?> </span>
   <br /><input type="submit" id="user_add_upd" name="user_add_upd" value="<?=_("Add or Update")?>">
   <input type="submit" id="user_del" name="user_del" value="<?=_("Delete")?>" disabled>
 </fieldset></form>
